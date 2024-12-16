@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import MovieCard from './card/MovieCard';
 import { fetchConfig, fetchGenres, fetchMovies } from '../../services/moviesService';
+import MovieCard from './card/MovieCard';
 import LoadMore from '../loadMore/LoadMore';
 import GenreFilter, { Genre } from '../genreFilter/GenreFilter';
 
 export interface Movie {
     id: number;
     title: string;
-    original_title: string;
     genre_ids: number[];
     release_date: string;
     poster_path: string;
@@ -17,13 +16,13 @@ export interface Movie {
 const Movies = () => {
     const [page, setPage] = useState<number>(1);
     const [movies, setMovies] = useState<Movie[]>([]);
-    const [posterSizesConfig, setPosterSizesConfig] = useState<string[] | null>(null);
-    const [baseUrl, setBaseUrl] = useState<string | null>(null);
     const [genres, setGenres] = useState<Genre[]>([]);
-    const [selectedGenres, setSelectedGenres] = useState<number[]>([]);
+    const [posterSizesConfig, setPosterSizesConfig] = useState<string[] | undefined>(undefined);
+    const [baseUrl, setBaseUrl] = useState<string | undefined>(undefined);
+    const [selectedGenres, setSelectedGenres] = useState<number[] | undefined>(undefined);
     
     useEffect(() => {
-        fetchMovies(1, []).then((data) => {
+        fetchMovies(1).then((data) => {
             setMovies(data.results);
         });
 
@@ -36,17 +35,18 @@ const Movies = () => {
     }, []);
 
     useEffect(() => {
-        if (page === 1 && selectedGenres.length === 0) return;
+        if (page === 1 && !selectedGenres) return;
+
         const fetchMoreMovies = async () => {
-            const moviesData = await fetchMovies(page, selectedGenres);
+            const moviesData = await fetchMovies(page, selectedGenres!);
             setMovies(prevMovies => {
                 if (page === 1) return moviesData.results;
-
+                
                 const existingIds = new Set(prevMovies.map(movie => movie.id));
                 const uniqueNewMovies = moviesData.results.filter(
                     (movie: Movie) => !existingIds.has(movie.id)
                 );
-                
+
                 return [...prevMovies, ...uniqueNewMovies];
             });
         };
@@ -68,16 +68,16 @@ const Movies = () => {
 
     return (
         <>
-            <div className="flex justify-center w-full">
-                <div className='bg-[#ffffff] flex flex-col gap-10 p-10 w-full max-w-[1440px]'>
+            <div className="flex justify-center w-full text-sm sm:text-base">
+                <div className='flex flex-col gap-10 p-5 sm:p-10 w-full max-w-[1440px] bg-white'>
                     <GenreFilter genres={genres} searchGenre={searchGenre} />
                     <div className='flex flex-wrap gap-6 after:content-[""] after:flex-auto'>
                         {baseUrl && posterSizesConfig && movies.map((movie) => (
                             <MovieCard
-                            key={`${movie.id}`} 
-                            movie={movie} 
-                            baseUrl={baseUrl} 
-                            imgSize={posterSizesConfig[3]} 
+                                key={`${movie.id}`} 
+                                movie={movie} 
+                                baseUrl={baseUrl} 
+                                imgSize={posterSizesConfig[3]} 
                             />
                         ))
                     }

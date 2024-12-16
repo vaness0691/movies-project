@@ -17,18 +17,18 @@ const GenreFilter = ({genres, searchGenre}: {genres: Genre[], searchGenre: (sele
     }
 
     return (
-        <div className='flex flex-col items-start text-black gap-2'>
+        <div className='flex flex-col items-start gap-2 sm:w-2/3'>
             <span className='px-1'>
                 Filter by Genre:
             </span>
             <div className='flex gap-2 flex-wrap'>
                 {genres && genres.map((genre) => (
-                    <button key={genre.id} className={`${selectedFilterIds.includes(genre.id) ? 'bg-[#01b4e4] text-white' : ''} border border-gray-300 rounded-lg px-2 py-1 cursor-pointer`} onClick={() => updateSelectedIds(genre.id)}>
+                    <button key={genre.id} className={`${selectedFilterIds.includes(genre.id) ? 'bg-lightBlue text-white' : ''} border border-gray-300 rounded-lg px-2 py-1 cursor-pointer`} onClick={() => updateSelectedIds(genre.id)}>
                         {genre.name}
                     </button>
                 ))}
            </div>
-           <button className='border border-[#01b4e4] rounded-lg px-2 py-1 cursor-pointer bg-[#01b4e4] text-white' onClick={() => searchGenre(selectedFilterIds)}>Search</button>
+           <button className='border border-lightBlue rounded-lg px-2 py-1 cursor-pointer bg-lightBlue text-white' onClick={() => searchGenre(selectedFilterIds)}>Search</button>
         </div>
     );
 };
